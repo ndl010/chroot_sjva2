@@ -98,8 +98,8 @@ echo " done"
 echo ""
 
 echo "(Step6) Python compile package setting.." 
-apt-y install build-essential checkinstall
-apt-y install libreadline-gplv2-dev libncursew5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+apt -y install build-essential checkinstall
+apt -y install libreadline-gplv2-dev libncursew5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 echo " done"
 echo ""
 

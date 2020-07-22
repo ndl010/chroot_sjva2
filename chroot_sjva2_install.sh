@@ -1,7 +1,7 @@
-# made by jassmusic @20.07.06
+# made by jassmusic @20.07.06 modified for debian-chroot @20.07.22
 
-echo "-- SJVA2 Install for Ubuntu Linux Native"
-echo "   from nVidia Shield Cafe --"
+echo "-- SJVA2 Install for Synology Debian-Chroot"
+echo "   from SJVA.me --"
 echo ""
 
 #echo " - Killing filebrowser process"
@@ -24,49 +24,82 @@ apt -y update && apt -y upgrade
 apt -y install dialog apt-utils vim curl busybox
 apt-get install tzdata locales
 dpkg-reconfigure tzdata
-dpkg-reconfigure locales
+echo "LC-ALL=en_US.UTF-8" >> /etc/enviroment
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+locale-gen en_US.UTF-8
 echo " done"
 echo ""
 
 echo "(Step3) Build Package setting.."
-apt -y install python python-pip python-dev git libffi-dev libxml2-dev libxslt-dev zlib1g-dev
-# Ubuntu
-#apt -y install libjpeg62-dev
-# Debian
+apt -y install python python-dev git libffi-dev libxml2-dev libxslt-dev zlib1g-dev 
 apt -y install libjpeg62-turbo-dev
+cd /home
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+rm get-pip.py
 echo " done"
 echo ""
 
-#echo "(Optional) Java setting.."
-# Ubuntu
-#apt -y install openjdk-8-jdk
-# Debian
-#apt-get install default-jdk
-#echo " done"
-#echo ""
+echo "(Step4) Rclone setting..
+curl https://rclone.org/install.sh | bash
+echo " done"
+echo ""
 
-#echo "(Optional) Rclone setting.."
-#curl https://rclone.org/install.sh | bash
-#echo " done"
-#echo ""
+echo "(Step5) ffmpeg setting.."
+rm -f /etc/apt/sources.list
+cat >> /etc/apt/sources.list << 'EOF'
+# Whatever's uncommented first in this file counts as the "main" distribution
+# (unless you change the ordering). See /etc/apt/preferences for more
+# information on how apt-pinning is set up.
 
-#echo "(Optional) filebrowser setting.."
-#curl -fsSL https://filebrowser.xyz/get.sh | bash
-#echo " done"
-#echo ""
+################################################
+## jessie
+deb http://ftp.fr.debian.org/debian/ jessie main contrib non-free
+deb-src http://ftp.fr.debian.org/debian/ jessie main contrib non-free
+deb http://security.debian.org/ jessie/updates main contrib non-free
+deb-src http://security.debian.org/ jessie/updates main contrib non-free
 
-echo "(Step4) ffmpeg setting.."
+# jessie-updates - optional, but default
+deb http://ftp.fr.debian.org/debian/ jessie-updates main contrib non-free
+deb-src http://ftp.fr.debian.org/debian/ jessie-updates main contrib non-free
+
+################################################
+## testing
+#deb http://ftp.fr.debian.org/debian/ testing main contrib non-free
+#deb-src http://ftp.fr.debian.org/debian/ testing main contrib non-free
+#deb http://security.debian.org/ testing/updates main contrib non-free
+#deb-src http://security.debian.org/ testing/updates main contrib non-free
+#deb http://ftp.fr.debian.org/debian/ testing-updates main contrib non-free
+#deb-src http://ftp.fr.debian.org/debian/ testing-updates main contrib non-free
+
+################################################
+## unstable
+#deb http://ftp.fr.debian.org/debian/ unstable main contrib non-free
+#deb-src http://ftp.fr.debian.org/debian/ unstable main contrib non-free
+
+################################################
+## experimental
+#deb http://ftp.fr.debian.org/debian/ experimental main contrib non-free
+#deb-src http://ftp.fr.debian.org/debian/ experimental main contrib non-free
+
+# deb-multimedia
+deb http://www.deb-multimedia.org jessie main non-free
+deb-src http://www.deb-multimedia.org jessie main non-free
+
+# jessie-backports
+deb http://httpredir.debin.org/debian/ jessie-backports main
+EOF
+apt -y update
+apt -y install deb-multimedia-keyring
+apt -y update
 apt -y install ffmpeg
 echo " done"
 echo ""
 
-echo "(Step5) redis-server setting.."
-apt -y install redis
-echo " done"
-echo ""
-
-echo "(Step6) vnstat setting.."
-apt -y install vnstat net-tools
+echo "(Step6) Python compile package setting.." 
+apt-y install build-essential checkinstall
+apt-y install libreadline-gplv2-dev libncursew5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 echo " done"
 echo ""
 
@@ -155,6 +188,20 @@ if [ "${RUN_FILEBROWSER}" == "true" ]; then
 fi
 EOM
 chmod 777 my_start.sh
+echo " done"
+
+echo "(Step10) Exporting file modify.."
+rm -f export.sh
+cat >> export.sh << 'EOM'
+#!/bin/sh
+export REDIS_PORT="46379"
+export USE_CELERY="false"
+export CELERY_WORKER_COUNT="2"
+export RUN_FILEBROWSER="true"
+export FILEBROWSER_PORT="9998"
+export OS_PREFIX="LinuxArm"
+EOM
+chmod 777 export.sh
 echo " done"
 
 echo "(Step10) Register SJVA2 to system service.."
@@ -248,11 +295,4 @@ echo " Run './my_start.sh' and check the SJVA2 running "
 echo " - if you have an error of lxml,"
 echo "   please try again as below"
 echo "   'CFLAGS="-O0" pip install lxml==4.3.3'"
-echo " - if you can't access 9997 port,"
-echo "   check the celery version downgrade as below"
-echo "   'pip install celery==3.1.15'"
-echo " - if you want to use vnstat,"
-echo "   check net-name of 'ifconfig'"
-echo "   'vnstat -u -i net-name'"
-echo "   'service vnstat start'"
 echo ""

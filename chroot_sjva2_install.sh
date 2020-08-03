@@ -37,7 +37,7 @@ apt -y install libjpeg62-turbo-dev
 cd /home
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
-rm get-pip.py
+rm -f /home/get-pip.py
 echo " done"
 echo ""
 

@@ -41,7 +41,7 @@ rm -f /home/get-pip.py
 echo " done"
 echo ""
 
-echo "(Step4) Rclone setting..
+echo "(Step4) Rclone setting.."
 curl https://rclone.org/install.sh | bash
 echo " done"
 echo ""

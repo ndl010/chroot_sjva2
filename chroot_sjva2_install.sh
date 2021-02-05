@@ -35,7 +35,7 @@ echo "(Step3) Build Package setting.."
 apt -y install python python-dev git libffi-dev libxml2-dev libxslt-dev zlib1g-dev 
 apt -y install libjpeg62-turbo-dev
 cd /home
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+curl https://bootstrap.pypa.io/2.7/get-pip.py -o get-pip.py
 python get-pip.py
 rm -f /home/get-pip.py
 echo " done"
@@ -99,7 +99,7 @@ echo ""
 
 echo "(Step6) Python compile package setting.." 
 apt -y install build-essential checkinstall
-apt -y install libreadline-gplv2-dev libncursew5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+apt -y install libreadline-gplv2-dev libncurses5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
 echo " done"
 echo ""
 

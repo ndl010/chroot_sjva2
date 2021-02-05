@@ -100,6 +100,7 @@ echo ""
 echo "(Step6) Python compile package setting.." 
 apt -y install build-essential checkinstall
 apt -y install libreadline-gplv2-dev libncurses5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+apt -y remove python-pycparser
 echo " done"
 echo ""
 
